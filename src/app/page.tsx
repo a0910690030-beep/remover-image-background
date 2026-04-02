@@ -36,18 +36,14 @@ export default function Home() {
   };
 
   const handleFile = (file: File) => {
-    // Validate file type
     if (!file.type.match(/image\/(jpeg|png)/)) {
       setError("Please upload JPG or PNG images only");
       return;
     }
-
-    // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
       setError("File size must be less than 10MB");
       return;
     }
-
     setError(null);
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -76,24 +72,19 @@ export default function Home() {
 
       const formData = new FormData();
       formData.append("image_file", blob, "image.jpg");
-      formData.append("size", "auto");
 
-      const response = await fetch("https://api.remove.bg/v1.0/remove", {
+      const response = await fetch("/api/remove-bg", {
         method: "POST",
-        headers: {
-          "X-Api-Key": process.env.NEXT_PUBLIC_REMOVE_BG_API_KEY || "",
-        },
         body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.errors?.[0]?.message || "Failed to remove background");
+        throw new Error(errorData.error || "Failed to remove background");
       }
 
-      const blobResult = await response.blob();
-      const url = URL.createObjectURL(blobResult);
-      setResultImage(url);
+      const data = await response.json();
+      setResultImage(data.image);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -157,24 +148,15 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Preview Section */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-slate-700/50 rounded-xl p-4">
                 <h3 className="text-center mb-4 text-slate-300">Original</h3>
-                <img
-                  src={originalImage}
-                  alt="Original"
-                  className="w-full rounded-lg"
-                />
+                <img src={originalImage} alt="Original" className="w-full rounded-lg" />
               </div>
               <div className="bg-slate-700/50 rounded-xl p-4">
                 <h3 className="text-center mb-4 text-slate-300">Result</h3>
                 {resultImage ? (
-                  <img
-                    src={resultImage}
-                    alt="Result"
-                    className="w-full rounded-lg"
-                  />
+                  <img src={resultImage} alt="Result" className="w-full rounded-lg" />
                 ) : (
                   <div className="w-full aspect-square bg-slate-600/50 rounded-lg flex items-center justify-center">
                     <span className="text-slate-500">Waiting...</span>
@@ -183,14 +165,12 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex justify-center gap-4">
               {!resultImage ? (
                 <button
