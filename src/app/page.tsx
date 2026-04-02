@@ -73,18 +73,23 @@ export default function Home() {
       const formData = new FormData();
       formData.append("image_file", blob, "image.jpg");
 
-      const response = await fetch("/api/remove-bg", {
+      // Call Remove.bg API directly from client
+      const response = await fetch("https://api.remove.bg/v1.0/remove", {
         method: "POST",
+        headers: {
+          "X-Api-Key": "n7rv2nuw49mPuEWuTu8drXp4",
+        },
         body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to remove background");
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to remove background");
       }
 
-      const data = await response.json();
-      setResultImage(data.image);
+      const blobResult = await response.blob();
+      const url = URL.createObjectURL(blobResult);
+      setResultImage(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
