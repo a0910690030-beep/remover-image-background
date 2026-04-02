@@ -78,7 +78,7 @@ export default function Home() {
       formData.append("image_file", blob, "image.jpg");
       formData.append("size", "auto");
 
-      const response = await fetch("https://api.remove.bg/v1/remove", {
+      const response = await fetch("https://api.remove.bg/v1.0/remove", {
         method: "POST",
         headers: {
           "X-Api-Key": process.env.NEXT_PUBLIC_REMOVE_BG_API_KEY || "",
