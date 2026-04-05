@@ -74,7 +74,7 @@ export default function Home() {
       formData.append("image_file", blob, "image.jpg");
 
       // Call Remove.bg API directly from client
-      const response = await fetch("https://api.remove.bg/v1.0/remove", {
+      const response = await fetch("https://api.remove.bg/v1.0/removebg", {
         method: "POST",
         headers: {
           "X-Api-Key": "n7rv2nuw49mPuEWuTu8drXp4",
